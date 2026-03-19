@@ -10,22 +10,22 @@ const services = [
   },
   {
     title: "Sustainable Composites",
-    image: "/fibre.jpg",
+    image: "/sustainability-composite-new.jpg",
     description: "Sustainable materials made from pineapple fibres",
   },
   {
     title: "3D Printing",
-    image: "/3dprint.jpg",
+    image: "/3d-printing-new.jpg",
     description: "3D printed solutions catered to your requirements",
   },
   {
     title: "Automotive Parts",
-    image: "/bumper.png",
+    image: "/automotive-parts-new.jpg",
     description: "Customised parts based on your specifications",
   },
   {
     title: "Reverse Engineering",
-    image: "/scanning.png",
+    image: "/reverse-engineering-new.jpg",
     description: "Reverse engineered solutions for your needs",
   },
   {
