@@ -88,7 +88,7 @@ export default function Carousel() {
               >
                 {/* Image */}
                 <div
-                  className="absolute inset-0 bg-cover bg-center"
+                  className="absolute inset-0 bg-cover bg-center brightness-125"
                   style={{ backgroundImage: `url(${service.image})` }}
                 />
 
@@ -96,7 +96,7 @@ export default function Carousel() {
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
+                    background: "linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 50%, transparent 100%)",
                   }}
                 />
 
