@@ -80,12 +80,12 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             <div className="relative h-[1px] bg-white/10">
               {/* Fill */}
               <div
-                className="absolute top-0 left-0 h-full bg-white/80 transition-all duration-75"
+                className="absolute top-0 left-0 h-full bg-[#dff122] transition-all duration-75"
                 style={{ width: `${progress}%` }}
               />
               {/* Glow tip */}
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-1 h-3 bg-white rounded-full blur-sm transition-all duration-75"
+                className="absolute top-1/2 -translate-y-1/2 w-1 h-3 bg-[#dff122] rounded-full blur-sm transition-all duration-75"
                 style={{ left: `calc(${progress}% - 2px)`, opacity: progress > 1 ? 1 : 0 }}
               />
             </div>

@@ -33,7 +33,7 @@ export default function ThreeCube() {
     // Edges
     const edges = new THREE.EdgesGeometry(geometry);
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0xffffff,
+      color: 0xdff122,
       transparent: true,
       opacity: 0.7,
     });
@@ -42,18 +42,18 @@ export default function ThreeCube() {
     // Glow cube
     const glowEdges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.45, 1.45, 1.45));
     const glowMaterial = new THREE.LineBasicMaterial({
-      color: 0x9966ff,
+      color: 0xdff122,
       transparent: true,
-      opacity: 0.25,
+      opacity: 0.4,
     });
     const glowWireframe = new THREE.LineSegments(glowEdges, glowMaterial);
 
     // Outer glow
     const outerEdges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.52, 1.52, 1.52));
     const outerMaterial = new THREE.LineBasicMaterial({
-      color: 0x6644cc,
+      color: 0xdff122,
       transparent: true,
-      opacity: 0.15,
+      opacity: 0.2,
     });
     const outerWireframe = new THREE.LineSegments(outerEdges, outerMaterial);
 

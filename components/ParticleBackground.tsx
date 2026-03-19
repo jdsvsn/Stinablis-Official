@@ -12,7 +12,12 @@ export default function ParticleBackground() {
     const mount = mountRef.current;
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const isMobile = window.innerWidth < 768;
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: window.devicePixelRatio < 2, 
+      alpha: true,
+      powerPreference: "high-performance" 
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
@@ -24,12 +29,12 @@ export default function ParticleBackground() {
     camera.position.z = 5;
 
     // Particles
-    const count = 1500;
+    const count = isMobile ? 1500 : 3000;
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count * 3; i += 3) {
-      positions[i]     = (Math.random() - 0.5) * 20; // X: -10 to 10
-      positions[i + 1] = (Math.random() - 0.5) * 20; // Y: -10 to 10
-      positions[i + 2] = (Math.random() - 0.5) * 10; // Z: -5 to 5
+      positions[i]     = (Math.random() - 0.5) * 30; // X: -15 to 15
+      positions[i + 1] = (Math.random() - 0.5) * 30; // Y: -15 to 15
+      positions[i + 2] = (Math.random() - 0.5) * 15; // Z: -7.5 to 7.5
     }
 
     const particleGeometry = new THREE.BufferGeometry();
@@ -37,17 +42,18 @@ export default function ParticleBackground() {
 
     const particleMaterial = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 0.03,
-      blending: THREE.AdditiveBlending,
-      opacity: 0.6,
+      size: 0.08,
       transparent: true,
+      opacity: 0.9,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true
     });
 
     const points = new THREE.Points(particleGeometry, particleMaterial);
     scene.add(points);
 
     // Grid
-    const grid = new THREE.GridHelper(40, 40, 0x4444ff, 0x222222);
+    const grid = new THREE.GridHelper(40, 40, 0xdff122, 0x222222);
     grid.rotation.x = Math.PI / 2;
     const gridMaterials = Array.isArray(grid.material) ? grid.material : [grid.material];
     gridMaterials.forEach((m) => {
@@ -119,7 +125,6 @@ export default function ParticleBackground() {
       ref={mountRef}
       className="fixed inset-0 z-[-1]"
       style={{
-        mixBlendMode: "screen",
         pointerEvents: "none",
         width: "100vw",
         height: "100vh",

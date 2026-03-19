@@ -6,8 +6,14 @@ export default function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // Check if touch device
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isTouch) return;
+
+    setVisible(true);
     let mouseX = 0;
     let mouseY = 0;
     let ringX = 0;
@@ -57,6 +63,8 @@ export default function CustomCursor() {
       cancelAnimationFrame(animId);
     };
   }, []);
+
+  if (!visible) return null;
 
   return (
     <>

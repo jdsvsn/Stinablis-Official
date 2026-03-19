@@ -33,11 +33,6 @@ const services = [
     image: "/web.png",
     description: "Customised software solutions, websites and databases",
   },
-  {
-    title: "Animation and Audio Production",
-    image: "/production.png",
-    description: "Your production needs, all in one stop",
-  },
 ];
 
 function getCardClass(index: number, active: number, total: number): string {
@@ -51,7 +46,17 @@ function getCardClass(index: number, active: number, total: number): string {
 
 export default function Carousel() {
   const [active, setActive] = useState(0);
+  const [containerHeight, setContainerHeight] = useState("450px");
   const total = services.length;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setContainerHeight(window.innerWidth < 768 ? "350px" : "450px");
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const next = useCallback(() => setActive((a) => (a + 1) % total), [total]);
   const prev = useCallback(() => setActive((a) => (a - 1 + total) % total), [total]);
@@ -62,11 +67,11 @@ export default function Carousel() {
   }, [next]);
 
   return (
-    <div className="flex flex-col items-center gap-10">
+    <div className="flex flex-col items-center gap-4">
       {/* Carousel */}
       <div
         className="carousel-container relative w-full"
-        style={{ height: "300px" }}
+        style={{ height: containerHeight }}
       >
         <div className="relative w-full h-full flex items-center justify-center">
           {services.map((service, i) => {
@@ -91,16 +96,16 @@ export default function Carousel() {
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)",
+                    background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
                   }}
                 />
 
                 {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="font-michroma text-white text-lg tracking-wider leading-snug">
+                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+                  <h3 className="font-michroma text-white text-xl md:text-3xl tracking-wider leading-snug">
                     {service.title}
                   </h3>
-                  <p className="font-ar-one text-white/50 text-sm mt-1 tracking-wide">
+                  <p className="font-ar-one text-white/70 text-sm md:text-lg mt-2 md:mt-3 tracking-wide max-w-lg">
                     {service.description}
                   </p>
                 </div>
@@ -132,17 +137,17 @@ export default function Carousel() {
       </div>
 
       {/* Arrow buttons */}
-      <div className="flex gap-4">
+      <div className="flex gap-6">
         <button
           onClick={prev}
-          className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-all duration-300 font-michroma text-xs"
+          className="w-14 h-14 rounded-full border-2 border-[#dff122]/40 flex items-center justify-center text-[#dff122] hover:bg-[#dff122] hover:text-black hover:border-[#dff122] transition-all duration-300 font-michroma text-xl"
           aria-label="Previous"
         >
           ←
         </button>
         <button
           onClick={next}
-          className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-all duration-300 font-michroma text-xs"
+          className="w-14 h-14 rounded-full border-2 border-[#dff122]/40 flex items-center justify-center text-[#dff122] hover:bg-[#dff122] hover:text-black hover:border-[#dff122] transition-all duration-300 font-michroma text-xl"
           aria-label="Next"
         >
           →

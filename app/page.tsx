@@ -7,7 +7,7 @@ import emailjs from "@emailjs/browser";
 import LoadingScreen from "@/components/LoadingScreen";
 import Navbar from "@/components/Navbar";
 import Carousel from "@/components/Carousel";
-import ParticleBackground from "@/components/ParticleBackground";
+import Footer from "@/components/Footer";
 
 // Dynamic imports for client-only components
 const ThreeCube = dynamic(() => import("@/components/ThreeCube"), { ssr: false });
@@ -63,22 +63,20 @@ export default function Home() {
       <LoadingScreen onComplete={() => setLoaded(true)} />
 
       {loaded && (
-        <>
+        <div className="relative w-full overflow-x-hidden">
           <CustomCursor />
 
           {/* Fixed background gradient */}
           <div
-            className="fixed inset-0 z-[-2]"
+            className="fixed inset-0 z-[-10]"
             style={{
               background: "linear-gradient(135deg, #0a0a0f 0%, #050508 50%, #0f0a15 100%)",
             }}
           />
 
-          <ParticleBackground />
-
           {/* Orb: top left */}
           <div
-            className="fixed z-[-1] pointer-events-none"
+            className="fixed z-[-5] pointer-events-none"
             style={{
               top: "-100px",
               left: "-100px",
@@ -92,7 +90,7 @@ export default function Home() {
 
           {/* Orb: bottom right */}
           <div
-            className="fixed z-[-1] pointer-events-none"
+            className="fixed z-[-5] pointer-events-none"
             style={{
               bottom: "-80px",
               right: "-80px",
@@ -121,11 +119,11 @@ export default function Home() {
               transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
               className="text-center"
             >
-              <h1 className="font-michroma text-6xl md:text-7xl lg:text-8xl font-normal text-white tracking-[0.1em] mb-6 leading-none">
+              <h1 className="font-michroma text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal text-white tracking-[0.1em] mb-6 leading-none">
                 STINABLIS
               </h1>
-              <div className="w-20 h-[1px] bg-white/20 mx-auto mb-6" />
-              <p className="font-ar-one text-lg md:text-xl lg:text-2xl text-white/70 tracking-wide max-w-lg mx-auto">
+              <div className="w-20 h-[2px] bg-[#dff122] mx-auto mb-6" />
+              <p className="font-ar-one text-base sm:text-lg md:text-xl lg:text-2xl text-[#aca7a9] tracking-wide max-w-lg mx-auto">
                 Digital Manufacturing Solutions in Malaysia
               </p>
             </motion.div>
@@ -134,29 +132,63 @@ export default function Home() {
           {/* ABOUT */}
           <section
             id="about"
-            className="relative z-10 min-h-screen flex items-center justify-center px-6"
+            className="relative z-10 min-h-screen flex items-center justify-center px-6 overflow-hidden"
           >
+            {/* Subtle Ghost Text */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+              <span className="font-michroma text-[25vw] md:text-[20vw] text-white/[0.02] leading-none">
+                ABOUT
+              </span>
+            </div>
+
             <motion.div
               variants={sectionVariants}
               initial="hidden"
               whileInView="visible"
               exit="exit"
               viewport={{ once: false, amount: 0.3 }}
-              className="max-w-3xl mx-auto text-center"
+              className="max-w-4xl mx-auto text-center relative z-10"
             >
-              <h2 className="font-michroma text-4xl md:text-5xl lg:text-6xl text-white tracking-wider mb-4 leading-tight">
-                About Us
-              </h2>
-              <p className="font-ar-one text-base md:text-lg text-white/50 mb-8">
-                Who we are 
-              </p>
-              <div className="w-16 h-[1px] bg-white/20 mx-auto mb-10" />
-              <p className="font-ar-one text-base md:text-lg text-white/60 leading-relaxed mb-6">
-                <strong className="text-white/80">Engineering</strong> <strong className="text-white/80">Software</strong> <strong className="text-white/80">Manufacturing</strong> 
-              </p>
-              <p className="font-ar-one text-base md:text-lg text-white/50 leading-relaxed">
-                Born in Malaysia, we combine engineering precision, advanced manufacturing, and modern software to deliver high-performance digital manufacturing solutions. From system automation and custom platforms to precision-engineered components, we build reliable tools that help industries design, produce, and operate better.
-              </p>
+              <div className="mb-12">
+                <h2 className="font-michroma text-4xl md:text-5xl lg:text-6xl text-white tracking-wider leading-tight">
+                  About Us
+                </h2>
+                <div className="w-16 h-[2px] bg-[#dff122] mx-auto mt-2" />
+              </div>
+
+              <div className="flex justify-center items-center flex-wrap gap-4 md:gap-8 mb-12">
+                {["ENGINEERING", "SOFTWARE", "MANUFACTURING"].map((item, i) => (
+                  <div key={item} className="flex items-center">
+                    <motion.span
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 + (i * 0.1) }}
+                      className="font-michroma text-xs md:text-sm tracking-[0.3em] text-white/80"
+                    >
+                      {item}
+                    </motion.span>
+                    {i < 2 && (
+                      <motion.span 
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{ delay: 0.6 + (i * 0.1) }}
+                        className="hidden md:block ml-4 md:ml-8 text-white/40 font-light text-2xl"
+                      >
+                        |
+                      </motion.span>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <motion.p 
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.8, duration: 1 }}
+                className="font-ar-one text-lg md:text-xl lg:text-2xl text-white/50 leading-relaxed max-w-3xl mx-auto"
+              >
+                Born in Malaysia, we combine <span className="text-white/80">engineering precision</span>, advanced manufacturing, and modern software to deliver high-performance digital manufacturing solutions. We build reliable tools that help industries design, produce, and <span className="text-white/80">operate better</span>.
+              </motion.p>
             </motion.div>
           </section>
 
@@ -173,14 +205,11 @@ export default function Home() {
               viewport={{ once: false, amount: 0.2 }}
               className="w-full max-w-5xl mx-auto"
             >
-              <div className="text-center mb-16">
-                <p className="font-michroma text-[10px] tracking-[0.5em] text-white/30 mb-6">
-                  WHAT WE DO
-                </p>
+              <div className="text-center mb-0">
                 <h2 className="font-michroma text-4xl md:text-5xl lg:text-6xl text-white tracking-wider leading-tight">
-                  Our Products
+                  Products & Services
                 </h2>
-                <div className="w-16 h-[1px] bg-white/20 mx-auto mt-8" />
+                <div className="w-16 h-[2px] bg-[#dff122] mx-auto mt-2" />
               </div>
 
               <Carousel />
@@ -202,12 +231,10 @@ export default function Home() {
             >
               {/* Heading */}
               <div className="text-center mb-12">
-                <h2 className="font-michroma text-4xl md:text-5xl lg:text-6xl text-white tracking-wider mb-4">
+                <h2 className="font-michroma text-4xl md:text-5xl lg:text-6xl text-white tracking-wider mb-2">
                   Contact Us
                 </h2>
-                <p className="font-ar-one text-white/60 text-lg">
-                  Tell us what you need. We&apos;ll reply fast.
-                </p>
+                <div className="w-16 h-[2px] bg-[#dff122] mx-auto mb-4" />
               </div>
 
               {/* Three columns */}
@@ -223,20 +250,28 @@ export default function Home() {
                   <p className="font-ar-one text-white/60 text-sm">info@stinablis.com</p>
                   <div className="flex flex-col gap-2">
                     <a
-                      href="https://facebook.com/stinablis"
+                      href="https://www.instagram.com/stinablis/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-michroma text-xs tracking-widest text-white/60 hover:text-white transition-colors duration-300"
+                      className="font-michroma text-xs tracking-widest text-[#dff122] hover:text-white transition-colors duration-300"
                     >
-                      STINABLIS FACEBOOK PAGE
+                      STINABLIS INSTAGRAM PAGE
                     </a>
                     <a
-                      href="https://linkedin.com/company/stinablis"
+                      href="https://www.linkedin.com/company/stinablis/posts/?feedView=all"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-michroma text-xs tracking-widest text-white/60 hover:text-white transition-colors duration-300"
+                      className="font-michroma text-xs tracking-widest text-[#dff122] hover:text-white transition-colors duration-300"
                     >
                       STINABLIS LINKEDIN PAGE
+                    </a>
+                    <a
+                      href="https://www.facebook.com/profile.php?id=61559570767870#"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-michroma text-xs tracking-widest text-[#dff122] hover:text-white transition-colors duration-300"
+                    >
+                      STINABLIS FACEBOOK PAGE
                     </a>
                   </div>
                 </div>
@@ -244,7 +279,7 @@ export default function Home() {
                 {/* Center — Form */}
                 <div
                   className="flex flex-col gap-4 p-8 rounded-lg"
-                  style={{ background: "rgba(30,30,30,0.95)", border: "1px solid rgba(255,255,255,0.08)" }}
+                  style={{ background: "rgba(20, 20, 20, 1)", border: "1px solid rgba(255,255,255,0.1)" }}
                 >
                   <input
                     type="text"
@@ -302,17 +337,12 @@ export default function Home() {
 
               </div>
 
-              {/* Footer */}
-              <div className="mt-20 pt-8 border-t border-white/5 text-center">
-                <p className="font-michroma text-[10px] tracking-[0.3em] text-white/20">
-                  © 2026 STINABLIS — ALL RIGHTS RESERVED.
-                </p>
-              </div>
-
             </motion.div>
           </section>
 
-        </>
+          <Footer />
+
+        </div>
       )}
     </>
   );
