@@ -123,7 +123,7 @@ export default function Home() {
                 STINABLIS
               </h1>
               <div className="w-20 h-[2px] bg-[#dff122] mx-auto mb-6" />
-              <p className="font-ar-one text-lg md:text-xl lg:text-2xl text-[#aca7a9] tracking-wide max-w-lg mx-auto">
+              <p className="font-ar-one text-lg md:text-xl lg:text-2xl text-[#aca7a9] tracking-wide mx-auto whitespace-nowrap">
                 Engineering and Digital Manufacturing Solutions
               </p>
             </motion.div>
