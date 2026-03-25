@@ -15,8 +15,8 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "STINABLIS - Where Engineering Meets Sustainability",
-  description: "Engineering meets sustainability in perfect harmony",
+  title: "STINABLIS | 3D Printing Malaysia & Custom Automotive Parts Manufacturing",
+  description: "STINABLIS is a Kuching, Sarawak, Malaysia-based digital manufacturing company specializing in 3D printing services, custom automotive parts, and rapid prototyping. We combine engineering precision, advanced manufacturing, and modern software to deliver high-performance, reliable solutions for industries and car enthusiasts across Malaysia.",
 };
 
 export default function RootLayout({
