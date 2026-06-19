@@ -89,6 +89,11 @@ export default function Home() {
 
       // Card minimize effect on scroll enter & exit (floating card transition) with responsive matchMedia
       const mm = gsap.matchMedia();
+      const aboutEl = document.getElementById("about");
+      const contactEl = document.getElementById("contact");
+      const vh = window.innerHeight;
+      const aboutRatio = aboutEl ? Math.max(0.1, (aboutEl.offsetHeight - vh) / vh) : 1;
+      const contactRatio = contactEl ? Math.max(0.1, (contactEl.offsetHeight - vh) / vh) : 1;
 
       // Mobile scale and borders
       mm.add("(max-width: 767px)", () => {
@@ -112,23 +117,23 @@ export default function Home() {
               scale: 1.0,
               borderRadius: "0px",
               boxShadow: "0 0px 0px 0px rgba(0, 0, 0, 0)",
-              duration: 1,
-              ease: "power1.out"
+              duration: 1.0,
+              ease: "none"
             }
           )
           .to("#about", {
             scale: 1.0,
             borderRadius: "0px",
             boxShadow: "0 0px 0px 0px rgba(0, 0, 0, 0)",
-            duration: 3,
+            duration: aboutRatio,
             ease: "none"
           })
           .to("#about", {
             scale: 0.95,
             borderRadius: "20px",
             boxShadow: "0 15px 30px -10px rgba(0, 0, 0, 0.4)",
-            duration: 1,
-            ease: "power1.in"
+            duration: 1.0,
+            ease: "none"
           });
 
         const contactScrollTl = gsap.timeline({
@@ -151,23 +156,23 @@ export default function Home() {
               scale: 1.0,
               borderRadius: "0px",
               boxShadow: "0 0px 0px 0px rgba(0, 0, 0, 0)",
-              duration: 1,
-              ease: "power1.out"
+              duration: 1.0,
+              ease: "none"
             }
           )
           .to("#contact", {
             scale: 1.0,
             borderRadius: "0px",
             boxShadow: "0 0px 0px 0px rgba(0, 0, 0, 0)",
-            duration: 3,
+            duration: contactRatio,
             ease: "none"
           })
           .to("#contact", {
             scale: 0.95,
             borderRadius: "20px",
             boxShadow: "0 15px 30px -10px rgba(0, 0, 0, 0.4)",
-            duration: 1,
-            ease: "power1.in"
+            duration: 1.0,
+            ease: "none"
           });
       });
 
@@ -193,23 +198,23 @@ export default function Home() {
               scale: 1.0,
               borderRadius: "0px",
               boxShadow: "0 0px 0px 0px rgba(0, 0, 0, 0)",
-              duration: 1,
-              ease: "power1.out"
+              duration: 1.0,
+              ease: "none"
             }
           )
           .to("#about", {
             scale: 1.0,
             borderRadius: "0px",
             boxShadow: "0 0px 0px 0px rgba(0, 0, 0, 0)",
-            duration: 3,
+            duration: aboutRatio,
             ease: "none"
           })
           .to("#about", {
             scale: 0.88,
             borderRadius: "40px",
             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-            duration: 1,
-            ease: "power1.in"
+            duration: 1.0,
+            ease: "none"
           });
 
         const contactScrollTl = gsap.timeline({
@@ -232,23 +237,23 @@ export default function Home() {
               scale: 1.0,
               borderRadius: "0px",
               boxShadow: "0 0px 0px 0px rgba(0, 0, 0, 0)",
-              duration: 1,
-              ease: "power1.out"
+              duration: 1.0,
+              ease: "none"
             }
           )
           .to("#contact", {
             scale: 1.0,
             borderRadius: "0px",
             boxShadow: "0 0px 0px 0px rgba(0, 0, 0, 0)",
-            duration: 3,
+            duration: contactRatio,
             ease: "none"
           })
           .to("#contact", {
             scale: 0.88,
             borderRadius: "40px",
             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-            duration: 1,
-            ease: "power1.in"
+            duration: 1.0,
+            ease: "none"
           });
       });
 
@@ -426,20 +431,22 @@ export default function Home() {
           <CustomCursor />
           <Navbar />
 
+          {/* GLOBAL BACKGROUND ANIMATION */}
+          <div className="fixed inset-0 pointer-events-none z-0 opacity-100">
+            <LiquidEther
+              colors={['#fc673f', '#dff122', '#114d43']}
+              mouseForce={7}
+              cursorSize={80}
+              isViscous={false}
+              resolution={0.4}
+              autoDemo={true}
+              autoSpeed={0.15}
+              autoIntensity={0.9}
+            />
+          </div>
+
           {/* HERO */}
-          <section id="hero" className="min-h-screen flex flex-col justify-center items-center px-6 md:px-12 relative text-center">
-            <div className="absolute inset-0 pointer-events-none z-0 opacity-80">
-              <LiquidEther
-                colors={['#fc673f', '#dff122', '#114d43']}
-                mouseForce={7}
-                cursorSize={80}
-                isViscous={false}
-                resolution={0.4}
-                autoDemo={true}
-                autoSpeed={0.15}
-                autoIntensity={0.6}
-              />
-            </div>
+          <section id="hero" className="min-h-screen flex flex-col justify-center items-center px-6 md:px-12 relative z-10 text-center">
             <div className="hero-left relative z-10 max-w-4xl flex flex-col items-center">
               <div className="hero-eyebrow flex items-center gap-3.5 mb-7">
                 <p className="text-[11px] tracking-[0.16em] uppercase text-mauve font-medium">Kuching, Sarawak · Malaysia</p>
@@ -464,7 +471,7 @@ export default function Home() {
           </section>
 
           {/* ABOUT */}
-          <section id="about" className="bg-frost text-carbon py-24 md:py-32 px-6 md:px-12 relative overflow-hidden">
+          <section id="about" className="bg-frost text-carbon py-24 md:py-32 px-6 md:px-12 relative z-10 overflow-hidden">
             <div className="about-ghost absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-anton text-[120px] md:text-[22vw] tracking-[0.05em] text-carbon/5 pointer-events-none whitespace-nowrap select-none uppercase">
               ABOUT
             </div>
@@ -500,7 +507,7 @@ export default function Home() {
           </section>
 
           {/* PROCESS */}
-          <section id="process" className="bg-carbon py-24 md:py-32 px-6 md:px-12 relative overflow-hidden">
+          <section id="process" className="bg-carbon py-24 md:py-32 px-6 md:px-12 relative z-10 overflow-hidden">
             <div className="max-w-7xl mx-auto">
               <div className="section-label reveal mb-20 flex items-center gap-4">
                 <p className="text-[12px] tracking-[0.2em] uppercase text-mauve font-semibold font-roboto">How we work</p>
@@ -550,7 +557,7 @@ export default function Home() {
             </div>
           </section>
           {/* PRODUCTS & 3D PROTOTYPE */}
-          <section id="products" className="bg-carbon py-24 md:py-32 px-6 md:px-12 border-t border-frost/5">
+          <section id="products" className="bg-carbon py-24 md:py-32 px-6 md:px-12 border-t border-frost/5 relative z-10">
             <div className="max-w-7xl mx-auto">
               <div className="products-header reveal mb-20">
                 <div className="section-label mb-6 flex items-center gap-4">
@@ -592,7 +599,7 @@ export default function Home() {
           </section>
 
           {/* CONTACT */}
-          <section id="contact" className="bg-frost text-carbon py-24 md:py-32 px-6 md:px-12 relative overflow-hidden">
+          <section id="contact" className="bg-frost text-carbon py-24 md:py-32 px-6 md:px-12 relative z-10 overflow-hidden">
             <div className="max-w-7xl mx-auto">
               <div className="contact-header reveal mb-20">
                 <div className="section-label mb-6 flex items-center gap-4">

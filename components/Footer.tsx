@@ -10,7 +10,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-carbon px-6 md:px-12 py-10 border-t border-frost/5 flex flex-col md:flex-row items-center justify-between flex-wrap gap-5">
+    <footer className="bg-carbon px-6 md:px-12 py-10 border-t border-frost/5 flex flex-col md:flex-row items-center justify-between flex-wrap gap-5 relative z-10">
       <div className="font-anton text-[24px] tracking-[0.1em] text-frost">
         STINABLIS
       </div>

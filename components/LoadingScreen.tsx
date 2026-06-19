@@ -44,7 +44,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           style={{ width: `${prog}%` }}
         />
       </div>
-      <div className="text-[12px] tracking-[0.15em] text-mauve font-syne">
+      <div className="text-[12px] tracking-[0.15em] text-mauve font-roboto">
         {Math.floor(prog)}%
       </div>
     </div>
