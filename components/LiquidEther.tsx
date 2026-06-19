@@ -123,8 +123,17 @@ export default function LiquidEther({
       resize() {
         if (!this.container) return;
         const rect = this.container.getBoundingClientRect();
-        this.width = Math.max(1, Math.floor(rect.width));
-        this.height = Math.max(1, Math.floor(rect.height));
+        const newWidth = Math.max(1, Math.floor(rect.width));
+        const newHeight = Math.max(1, Math.floor(rect.height));
+
+        // Skip resizing if height changes due to mobile browser URL bar toggles
+        const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isMobile && newWidth === this.width) {
+          return;
+        }
+
+        this.width = newWidth;
+        this.height = newHeight;
         this.aspect = this.width / this.height;
         if (this.renderer) this.renderer.setSize(this.width, this.height, false);
       }

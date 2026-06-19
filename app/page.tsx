@@ -387,8 +387,8 @@ export default function Home() {
       gsap.to(".global-bg-anim", {
         scrollTrigger: {
           trigger: "#contact",
-          start: "top bottom",
-          end: "top 30%",
+          start: "top bottom+=500px",
+          end: "top bottom+=100px",
           scrub: true,
         },
         opacity: 0,
