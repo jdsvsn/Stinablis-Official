@@ -31,11 +31,6 @@ const services = [
     image: "/web.png",
     description: "Custom development of websites, applications, and databases tailored to engineering and industrial workflows. Built to integrate with your operations.",
   },
-  {
-    title: "Animation & Audio",
-    image: "/production.png",
-    description: "Professional 3D animation, motion graphics, and audio production services for industrial visualization, training, and commercial marketing.",
-  },
 ];
 
 export default function ServicesGrid() {
@@ -44,9 +39,7 @@ export default function ServicesGrid() {
       {services.map((service, i) => (
         <div
           key={i}
-          className={`service-card opacity-0 group relative bg-frost/3 border border-frost/10 overflow-hidden hover:border-coral transition-colors duration-300 ${
-            i === services.length - 1 ? "lg:col-start-2" : ""
-          }`}
+          className="service-card opacity-0 group relative bg-frost/3 border border-frost/10 overflow-hidden hover:border-coral transition-colors duration-300"
         >
           {/* Image Container */}
           <div className="h-64 overflow-hidden relative">
