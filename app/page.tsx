@@ -383,6 +383,18 @@ export default function Home() {
         }
       );
 
+      // Fade out global bg animation when approaching Contact section
+      gsap.to(".global-bg-anim", {
+        scrollTrigger: {
+          trigger: "#contact",
+          start: "top bottom",
+          end: "top 30%",
+          scrub: true,
+        },
+        opacity: 0,
+        ease: "none"
+      });
+
       // Contact Card minimize effect handled by matchMedia above
 
     });
@@ -432,7 +444,7 @@ export default function Home() {
           <Navbar />
 
           {/* GLOBAL BACKGROUND ANIMATION */}
-          <div className="fixed inset-0 pointer-events-none z-0 opacity-100">
+          <div className="global-bg-anim fixed inset-0 pointer-events-none z-0 opacity-100">
             <LiquidEther
               colors={['#fc673f', '#dff122', '#114d43']}
               mouseForce={7}
