@@ -383,12 +383,12 @@ export default function Home() {
         }
       );
 
-      // Fade out global bg animation when approaching Contact section
+      // Fade out global bg animation when scrolling into About section
       gsap.to(".global-bg-anim", {
         scrollTrigger: {
-          trigger: "#contact",
-          start: "top bottom+=500px",
-          end: "top bottom+=100px",
+          trigger: "#about",
+          start: "top top",
+          end: "top -50%",
           scrub: true,
         },
         opacity: 0,
