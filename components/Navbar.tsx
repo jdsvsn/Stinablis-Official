@@ -1,26 +1,55 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Home, Info, Box, Mail, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Home, Info, Box, Mail } from "lucide-react";
 
 const navLinks = [
-  { label: "HOME", href: "#home", icon: Home },
-  { label: "ABOUT", href: "#about", icon: Info },
-  { label: "PRODUCTS", href: "#services", icon: Box },
-  { label: "CONTACT", href: "#contact", icon: Mail },
+  { label: "Home", href: "#hero", icon: Home },
+  { label: "About", href: "#about", icon: Info },
+  { label: "Process", href: "#process", icon: Box },
+  { label: "Products", href: "#products", icon: Box },
+  { label: "3D Prototype", href: "#prototype", icon: Box },
+  { label: "Contact", href: "#contact", icon: Mail },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [isLightBg, setIsLightBg] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const onScroll = () => {
-      // Threshold to switch to menu icon (e.g., when heading towards About section)
-      setScrolled(window.scrollY > 300);
+      setScrolled(window.scrollY > 60);
+
+      const aboutEl = document.getElementById("about");
+      const contactEl = document.getElementById("contact");
+      const navbarHeight = 80;
+
+      let overLight = false;
+      [aboutEl, contactEl].forEach((el) => {
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= navbarHeight && rect.bottom >= 0) {
+            overLight = true;
+          }
+        }
+      });
+      setIsLightBg(overLight);
     };
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll(); // Run initially
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -29,119 +58,156 @@ export default function Navbar() {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
-      setMenuOpen(false);
     }
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const navClasses = scrolled
+    ? `fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-5xl px-6 md:px-8 py-3 rounded-full border shadow-2xl backdrop-blur-md transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] z-[500] flex items-center justify-between ${
+        isLightBg 
+          ? "bg-white/80 border-carbon/10 text-carbon shadow-carbon/5" 
+          : "bg-carbon/80 border-white/10 text-frost shadow-black/40"
+      }`
+    : `fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl px-6 md:px-12 py-5 bg-transparent border-b border-transparent transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] z-[500] flex items-center justify-between`;
+
   return (
     <>
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-4 transition-all duration-500"
-        style={{
-          background: "transparent",
-        }}
-      >
+      <nav className={navClasses}>
         {/* Logo */}
-        <button
-          onClick={() => scrollTo("#home")}
-          className="transition-opacity duration-300 hover:opacity-70 z-50"
-          aria-label="Go to home"
-        >
-          <img 
-            src="/logo-new.png" 
-            alt="Stinablis" 
-            className="w-24 h-24 object-contain brightness-0 invert" 
-          />
-        </button>
-
-        {/* Navigation / Hamburger */}
         <div className="flex items-center">
-          <AnimatePresence mode="wait">
-            {!scrolled ? (
-              <motion.div
-                key="full-nav"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="hidden md:flex items-center gap-8 md:gap-12"
-              >
-                {navLinks.map((link) => (
-                  <button
-                    key={link.label}
-                    onClick={() => scrollTo(link.href)}
-                    className="flex items-center gap-2 font-michroma text-[16px] tracking-[0.15em] text-[#aca7a9] hover:text-[#dff122] transition-colors duration-300 relative group"
-                  >
-                    <link.icon size={16} strokeWidth={3} className="text-[#dff122] transition-opacity" />
-                    {link.label}
-                    <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#dff122] group-hover:w-full transition-all duration-300" />
-                  </button>
-                ))}
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-
-          {/* Single Unified Menu Button */}
           <button
-            onClick={() => setMenuOpen(true)}
-            className={`text-[#dff122] hover:text-white transition-colors z-50 ml-4 ${!scrolled ? "md:hidden" : ""}`}
-            aria-label="Open menu"
+            onClick={scrollToTop}
+            className="group flex items-center"
+            aria-label="Go to home"
           >
-            <Menu size={32} strokeWidth={3} />
+            <img 
+              src="/logo-new.png" 
+              alt="Stinablis" 
+              className={`w-auto object-contain transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                scrolled 
+                  ? "h-8 md:h-9" 
+                  : "h-20 md:h-24"
+              } ${isLightBg ? 'brightness-0' : 'brightness-0 invert'}`} 
+            />
+          </button>
+        </div>
+
+        {/* Navigation Links */}
+        <ul className="hidden lg:flex items-center gap-9">
+          {navLinks.map((link) => (
+            <li key={link.label}>
+              <button
+                onClick={() => scrollTo(link.href)}
+                className={`flex items-center gap-2 font-roboto text-[13px] tracking-[0.12em] uppercase opacity-60 hover:opacity-100 transition-all duration-200 ${
+                  isLightBg ? "text-carbon" : "text-frost"
+                }`}
+              >
+                <link.icon size={14} className="opacity-70" />
+                {link.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* CTA and Burger */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => scrollTo("#contact")}
+            className={`hidden sm:block font-roboto text-[12px] tracking-[0.12em] uppercase px-6 py-2.5 border transition-all duration-200 rounded-full ${
+              isLightBg 
+                ? "text-carbon border-carbon/20 hover:border-coral hover:bg-coral/10" 
+                : "text-frost border-frost/20 hover:border-coral hover:bg-coral/10"
+            }`}
+          >
+            Get in touch
+          </button>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className={`lg:hidden p-2.5 rounded-full border transition-all duration-200 ${
+              isLightBg
+                ? "text-carbon border-carbon/15 hover:bg-carbon/5"
+                : "text-frost border-white/10 hover:bg-white/5"
+            }`}
+            aria-label="Toggle Menu"
+          >
+            {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </nav>
 
-      {/* Side Menu Overlay */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
-        {menuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
-            />
-            
-            {/* Sidebar */}
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-[300px] bg-[#0a0a0f] border-l border-white/10 z-[70] p-12 flex flex-col"
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 bg-carbon z-[490] lg:hidden flex flex-col justify-center px-8 md:px-24"
+          >
+            <div className="absolute top-6 left-6 md:left-12">
+              <img 
+                src="/logo-new.png" 
+                alt="Stinablis" 
+                className="h-10 w-auto object-contain brightness-0 invert" 
+              />
+            </div>
+            <button
+              onClick={() => setIsMenuOpen(false)}
+              className="absolute top-6 right-6 md:right-12 p-3 text-frost hover:text-coral transition-colors"
+              aria-label="Close Menu"
             >
-              <button
-                onClick={() => setMenuOpen(false)}
-                className="self-end text-white hover:text-white/70 transition-colors mb-16"
-              >
-                <X size={32} strokeWidth={3} />
-              </button>
+              <X size={28} />
+            </button>
 
-              <div className="flex flex-col gap-8">
-                {navLinks.map((link, i) => (
-                  <motion.button
-                    key={link.label}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 * i }}
-                    onClick={() => scrollTo(link.href)}
-                    className="flex items-center gap-4 font-michroma text-xl tracking-[0.2em] text-[#aca7a9] hover:text-[#dff122] text-left transition-colors"
+            <ul className="flex flex-col gap-5 md:gap-7 mt-8">
+              {navLinks.map((link, idx) => (
+                <motion.li 
+                  key={link.label}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 15 }}
+                  transition={{ delay: idx * 0.04 + 0.05, duration: 0.3, ease: "easeOut" }}
+                >
+                  <button
+                    onClick={() => {
+                      scrollTo(link.href);
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center gap-4 font-anton text-[24px] md:text-[32px] tracking-[0.05em] uppercase text-frost hover:text-coral transition-colors text-left"
                   >
-                    <link.icon size={20} strokeWidth={3} className="text-[#dff122]" />
+                    <span className="text-[12px] text-mauve font-roboto tracking-widest font-normal">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
                     {link.label}
-                  </motion.button>
-                ))}
-              </div>
+                  </button>
+                </motion.li>
+              ))}
+            </ul>
 
-              <div className="mt-auto border-t border-white/5 pt-8">
-                <p className="font-ar-one text-xs text-white/30 tracking-widest">
-                  STINABLIS © 2026
-                </p>
+            <div className="w-full h-[1px] bg-white/10 my-8" />
+
+            <div className="flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-center">
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-mauve mb-1 font-bold">Inquiries</p>
+                <a href="mailto:info@stinablis.com" className="text-frost hover:text-coral text-sm font-light">info@stinablis.com</a>
               </div>
-            </motion.div>
-          </>
+              <button
+                onClick={() => {
+                  scrollTo("#contact");
+                  setIsMenuOpen(false);
+                }}
+                className="bg-coral text-white font-roboto text-[12px] tracking-[0.15em] uppercase px-8 py-3.5 border border-coral hover:bg-transparent transition-all font-bold"
+              >
+                Get in touch
+              </button>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>

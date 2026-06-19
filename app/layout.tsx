@@ -1,21 +1,33 @@
 import type { Metadata } from "next";
-import { Anton, Roboto } from "next/font/google";
+import { Anton, Roboto, Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
 
 const anton = Anton({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-michroma",
+  variable: "--font-anton",
 });
 
 const roboto = Roboto({
-  weight: "400",
+  weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
-  variable: "--font-ar-one",
+  variable: "--font-roboto",
+});
+
+const syne = Syne({
+  subsets: ["latin"],
+  variable: "--font-syne",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "STINABLIS | 3D Printing & Custom Automotive Parts Malaysia",
+  title: "STINABLIS | Engineering & Digital Manufacturing Solutions",
   description: "STINABLIS: 3D printing, custom automotive parts & rapid prototyping in Kuching, Malaysia. Digital manufacturing for industry & car enthusiasts.",
 };
 
@@ -26,7 +38,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${anton.variable} ${roboto.variable} antialiased`}>
+      <body className={`${anton.variable} ${roboto.variable} ${syne.variable} ${dmSans.variable} font-roboto antialiased`}>
+        <div className="grain"></div>
+        <div className="scroll-bar" id="scrollBar"></div>
         {children}
       </body>
     </html>

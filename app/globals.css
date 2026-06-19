@@ -2,7 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --coral: #fc673f;
+  --frost: #eef4f6;
+  --carbon: #231f20;
+  --teal: #114d43;
+  --lime: #dff122;
+  --mauve: #aca7a9;
+}
+
 *, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
   cursor: none !important;
 }
 
@@ -10,106 +22,127 @@ html {
   scroll-behavior: smooth;
 }
 
-:root {
-  --brand-lime: #dff122;
-  --brand-grey: #aca7a9;
+body {
+  font-family: var(--font-dm-sans), sans-serif;
+  background: var(--carbon);
+  color: var(--frost);
+  overflow-x: hidden;
 }
 
-html, body {
-  background: #0a0a0f;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-
-.font-michroma {
-  font-family: var(--font-michroma), sans-serif;
-}
-
-.font-ar-one {
-  font-family: var(--font-ar-one), sans-serif;
-}
-
-/* Noise texture overlay */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.015;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-}
-
-/* Carousel 3D perspective */
-.carousel-container {
-  perspective: 1200px;
-  perspective-origin: center center;
-  overflow: visible;
-}
-
-.carousel-card {
-  position: absolute;
-  width: 90vw;
-  max-width: 600px;
-  height: 300px;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-style: preserve-3d;
+/* ── GRAIN ── */
+.grain {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9000;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px;
+  transform: translate3d(0, 0, 0); /* Promote to GPU composite layer */
   backface-visibility: hidden;
+  will-change: transform;
 }
 
-@media (min-width: 768px) {
-  .carousel-card {
-    height: 400px;
-  }
+/* ── SCROLL PROGRESS ── */
+.scroll-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--coral); z-index: 999; width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
 }
 
-.carousel-card.center {
-  transform: translateX(-50%) scale(1) rotateY(0deg) translateZ(0px);
-  left: 50%;
-  opacity: 1;
-  z-index: 10;
-}
-
-.carousel-card.left {
-  transform: translateX(-50%) translateX(-35%) rotateY(35deg) scale(0.8) translateZ(-200px);
-  left: 50%;
-  opacity: 0.5;
-  z-index: 5;
-}
-
-.carousel-card.right {
-  transform: translateX(-50%) translateX(35%) rotateY(-35deg) scale(0.8) translateZ(-200px);
-  left: 50%;
-  opacity: 0.5;
-  z-index: 5;
-}
-
-@media (min-width: 768px) {
-  .carousel-card.left {
-    transform: translateX(-50%) translateX(-50%) rotateY(35deg) scale(0.8) translateZ(-200px);
-  }
-  .carousel-card.right {
-    transform: translateX(-50%) translateX(50%) rotateY(-35deg) scale(0.8) translateZ(-200px);
-  }
-}
-
-.carousel-card.hidden-left {
-  transform: translateX(-50%) translateX(-90%) rotateY(45deg) scale(0.6) translateZ(-300px);
-  left: 50%;
+/* ── REVEAL ── */
+/* Prevent FOUC (flash of unstyled content) by hiding elements before GSAP initializes */
+.hero-eyebrow,
+.hero-name,
+.hero-tagline,
+.hero-actions,
+.hero-right,
+.pillar,
+.about-story,
+.process-step,
+.products-header,
+.service-card,
+.prototype-left,
+.prototype-right,
+.contact-header,
+.contact-col {
   opacity: 0;
-  z-index: 1;
-  pointer-events: none;
 }
 
-.carousel-card.hidden-right {
-  transform: translateX(-50%) translateX(90%) rotateY(-45deg) scale(0.6) translateZ(-300px);
-  left: 50%;
-  opacity: 0;
-  z-index: 1;
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+@keyframes orbFloat {
+  0%,100% { transform: translate(0,0); }
+  50% { transform: translate(30px, -20px); }
+}
+
+.animate-fade-up {
+  animation: fadeUp 1s ease forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease forwards;
+}
+
+/* ── ORBS ── */
+.orb {
+  position: absolute; border-radius: 50%;
+  pointer-events: none; filter: blur(80px);
+  animation: orbFloat 8s ease-in-out infinite;
+}
+
+/* ── FORM ── */
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(238,244,246,0.15);
+  padding: 12px 0;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--carbon);
+  outline: none;
+  resize: none;
+  transition: border-color 0.2s;
+}
+
+#contact .form-group input,
+#contact .form-group textarea {
+  border-bottom: 1px solid rgba(35,31,32,0.15);
+  color: var(--carbon);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--coral);
+}
+
+/* ── LENIS SMOOTH SCROLLING ── */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
   pointer-events: none;
 }

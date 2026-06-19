@@ -13,66 +13,63 @@ export default function ThreeCube() {
     const width = mount.clientWidth;
     const height = mount.clientHeight;
 
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(width, height);
+    renderer.setClearColor(0x000000, 0);
+    mount.appendChild(renderer.domElement);
+
     // Scene
     const scene = new THREE.Scene();
 
     // Camera
-    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-    camera.position.z = 3;
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(0, 0, 5);
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-    mount.appendChild(renderer.domElement);
+    // Main cube wireframe
+    const geo = new THREE.BoxGeometry(2, 2, 2);
+    const edges = new THREE.EdgesGeometry(geo);
+    const mat = new THREE.LineBasicMaterial({ color: 0xfc673f, linewidth: 2 });
+    const cube = new THREE.LineSegments(edges, mat);
+    scene.add(cube);
 
-    // Cube geometry
-    const geometry = new THREE.BoxGeometry(1.4, 1.4, 1.4);
+    // Inner cube
+    const geo2 = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+    const edges2 = new THREE.EdgesGeometry(geo2);
+    const mat2 = new THREE.LineBasicMaterial({ color: 0xdff122, linewidth: 1 });
+    const cube2 = new THREE.LineSegments(edges2, mat2);
+    scene.add(cube2);
 
-    // Edges
-    const edges = new THREE.EdgesGeometry(geometry);
-    const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0xdff122,
-      transparent: true,
-      opacity: 0.7,
+    // Dots at corners
+    const dotGeo = new THREE.SphereGeometry(0.04, 8, 8);
+    const dotMat = new THREE.MeshBasicMaterial({ color: 0xfc673f });
+    const corners = [
+      [-1,-1,-1],[-1,-1,1],[-1,1,-1],[-1,1,1],
+      [1,-1,-1],[1,-1,1],[1,1,-1],[1,1,1]
+    ];
+    corners.forEach(([x,y,z]) => {
+      const dot = new THREE.Mesh(dotGeo, dotMat);
+      dot.position.set(x,y,z);
+      cube.add(dot); // Attach to main cube for rotation
     });
-    const wireframe = new THREE.LineSegments(edges, lineMaterial);
 
-    // Glow cube
-    const glowEdges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.45, 1.45, 1.45));
-    const glowMaterial = new THREE.LineBasicMaterial({
-      color: 0xdff122,
-      transparent: true,
-      opacity: 0.4,
-    });
-    const glowWireframe = new THREE.LineSegments(glowEdges, glowMaterial);
-
-    // Outer glow
-    const outerEdges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.52, 1.52, 1.52));
-    const outerMaterial = new THREE.LineBasicMaterial({
-      color: 0xdff122,
-      transparent: true,
-      opacity: 0.2,
-    });
-    const outerWireframe = new THREE.LineSegments(outerEdges, outerMaterial);
-
-    const group = new THREE.Group();
-    group.add(wireframe);
-    group.add(glowWireframe);
-    group.add(outerWireframe);
-    scene.add(group);
-
-    // Scroll tracking
-let targetScroll = window.scrollY;
-let currentScroll = window.scrollY;
-const onScroll = () => { targetScroll = window.scrollY; };
-window.addEventListener("scroll", onScroll);
+    let mouseX = 0, mouseY = 0;
+    const onMouseMove = (e: MouseEvent) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    };
+    window.addEventListener("mousemove", onMouseMove);
 
     // Resize handler
+    let currentWidth = width;
+    let currentHeight = height;
     const onResize = () => {
       const w = mount.clientWidth;
       const h = mount.clientHeight;
+      if (w === currentWidth && h === currentHeight) return;
+      currentWidth = w;
+      currentHeight = h;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -81,31 +78,33 @@ window.addEventListener("scroll", onScroll);
 
     // Animation
     let animId: number;
+    let t = 0;
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      // Smooth scroll interpolation
-currentScroll += (targetScroll - currentScroll) * 0.05;
+      t += 0.005;
 
-const scrollProgress = currentScroll / (document.body.scrollHeight - window.innerHeight || 1);
-group.rotation.x = scrollProgress * Math.PI * 4;
-group.rotation.y = scrollProgress * Math.PI * 6;
-group.rotation.y += 0.001;
+      cube.rotation.x += (mouseY * 0.3 - cube.rotation.x) * 0.04;
+      cube.rotation.y += (mouseX * 0.3 + t - cube.rotation.y) * 0.04;
+      cube2.rotation.x = -cube.rotation.x * 1.5;
+      cube2.rotation.y = -cube.rotation.y * 1.5;
+
       renderer.render(scene, camera);
     };
     animate();
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", onResize);
       renderer.dispose();
-      geometry.dispose();
+      geo.dispose();
       edges.dispose();
-      lineMaterial.dispose();
-      glowEdges.dispose();
-      glowMaterial.dispose();
-      outerEdges.dispose();
-      outerMaterial.dispose();
+      mat.dispose();
+      geo2.dispose();
+      edges2.dispose();
+      mat2.dispose();
+      dotGeo.dispose();
+      dotMat.dispose();
       if (mount.contains(renderer.domElement)) {
         mount.removeChild(renderer.domElement);
       }
@@ -115,8 +114,7 @@ group.rotation.y += 0.001;
   return (
     <div
       ref={mountRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{ width: "100vw", height: "100vh" }}
+      className="w-full h-full"
     />
   );
 }

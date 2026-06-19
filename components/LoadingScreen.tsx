@@ -1,120 +1,52 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface LoadingScreenProps {
   onComplete: () => void;
 }
 
 export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
-  const [progress, setProgress] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [prog, setProg] = useState(0);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    const duration = 3000;
-    const interval = 30;
-    const steps = duration / interval;
-    let step = 0;
+    const loaderInt = setInterval(() => {
+      setProg((prev) => {
+        const next = prev + Math.random() * 18;
+        if (next >= 100) {
+          clearInterval(loaderInt);
+          setTimeout(() => {
+            setHidden(true);
+            setTimeout(onComplete, 800);
+          }, 300);
+          return 100;
+        }
+        return next;
+      });
+    }, 80);
 
-    const timer = setInterval(() => {
-      step++;
-      const raw = step / steps;
-      // Ease in-out curve
-      const eased = raw < 0.5
-        ? 2 * raw * raw
-        : 1 - Math.pow(-2 * raw + 2, 2) / 2;
-      setProgress(Math.min(eased * 100, 100));
-
-      if (step >= steps) {
-        clearInterval(timer);
-        setTimeout(() => {
-          setVisible(false);
-          setTimeout(onComplete, 600);
-        }, 200);
-      }
-    }, interval);
-
-    return () => clearInterval(timer);
+    return () => clearInterval(loaderInt);
   }, [onComplete]);
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
-          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center"
-          style={{ background: "linear-gradient(135deg, #0a0a0f 0%, #050508 50%, #0f0a15 100%)" }}
-        >
-          {/* Welcome text */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-12 text-center"
-          >
-            <p className="font-michroma text-xs tracking-[0.5em] text-white/40 mb-2">LOADING</p>
-            <h1 className="font-michroma text-4xl md:text-5xl font-normal tracking-[0.3em] text-white/90">
-              WELCOME TO STINABLIS
-            </h1>
-          </motion.div>
-
-          {/* Progress bar container */}
-          <motion.div
-            initial={{ opacity: 0, scaleX: 0.8 }}
-            animate={{ opacity: 1, scaleX: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="w-64 md:w-80"
-          >
-            {/* Progress percentage */}
-            <div className="flex justify-between mb-3">
-              <span className="font-michroma text-[10px] tracking-widest text-white/30">PROGRESS</span>
-              <span className="font-michroma text-[10px] tracking-widest text-white/50">
-                {Math.round(progress)}%
-              </span>
-            </div>
-
-            {/* Bar track */}
-            <div className="relative h-[1px] bg-white/10">
-              {/* Fill */}
-              <div
-                className="absolute top-0 left-0 h-full bg-[#dff122] transition-all duration-75"
-                style={{ width: `${progress}%` }}
-              />
-              {/* Glow tip */}
-              <div
-                className="absolute top-1/2 -translate-y-1/2 w-1 h-3 bg-[#dff122] rounded-full blur-sm transition-all duration-75"
-                style={{ left: `calc(${progress}% - 2px)`, opacity: progress > 1 ? 1 : 0 }}
-              />
-            </div>
-
-            {/* Tick marks */}
-            <div className="flex justify-between mt-2">
-              {[0, 25, 50, 75, 100].map((tick) => (
-                <div
-                  key={tick}
-                  className="h-1 w-[1px] transition-all duration-300"
-                  style={{
-                    background: progress >= tick ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.1)"
-                  }}
-                />
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Bottom tagline */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.3 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="font-ar-one text-[11px] tracking-[0.2em] text-white mt-16"
-          >
-            WHERE ENGINEERING MEETS INNOVATION
-          </motion.p>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div
+      className={`fixed inset-0 bg-carbon z-[9999] flex flex-col items-center justify-center gap-6 transition-all duration-800 ${
+        hidden ? "opacity-0 invisible" : "opacity-100 visible"
+      }`}
+    >
+      <div className="font-anton text-[40px] tracking-[0.1em] text-frost mb-4 opacity-50">
+        STINABLIS
+      </div>
+      <div className="w-[200px] h-[1px] bg-frost/10 relative overflow-hidden">
+        <div
+          className="absolute left-0 top-0 h-full bg-coral transition-all duration-50"
+          style={{ width: `${prog}%` }}
+        />
+      </div>
+      <div className="text-[12px] tracking-[0.15em] text-mauve font-syne">
+        {Math.floor(prog)}%
+      </div>
+    </div>
   );
 }

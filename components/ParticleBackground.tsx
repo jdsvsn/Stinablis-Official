@@ -1,134 +1,147 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import * as THREE from "three";
 
 export default function ParticleBackground() {
-  const mountRef = useRef<HTMLDivElement>(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!mountRef.current) return;
-    const mount = mountRef.current;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    // Renderer
-    const isMobile = window.innerWidth < 768;
-    const renderer = new THREE.WebGLRenderer({ 
-      antialias: window.devicePixelRatio < 2, 
-      alpha: true,
-      powerPreference: "high-performance" 
-    });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-    mount.appendChild(renderer.domElement);
+    let W: number, H: number, pts: any[];
+    let animId: number;
+    let mouse = { x: -1000, y: -1000, active: false };
 
-    // Scene & Camera
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
+    // Colorful palette matching Google Antigravity Confetti particles
+    const colors = [
+      "#fc673f", // Coral
+      "#dff122", // Lime
+      "#38bdf8", // Sky Blue
+      "#c084fc", // Light Purple
+      "#f472b6", // Pink
+      "#4ade80", // Vibrant Green
+    ];
 
-    // Particles
-    const count = isMobile ? 1500 : 3000;
-    const positions = new Float32Array(count * 3);
-    for (let i = 0; i < count * 3; i += 3) {
-      positions[i]     = (Math.random() - 0.5) * 30; // X: -15 to 15
-      positions[i + 1] = (Math.random() - 0.5) * 30; // Y: -15 to 15
-      positions[i + 2] = (Math.random() - 0.5) * 15; // Z: -7.5 to 7.5
-    }
-
-    const particleGeometry = new THREE.BufferGeometry();
-    particleGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-
-    const particleMaterial = new THREE.PointsMaterial({
-      color: 0xffffff,
-      size: 0.08,
-      transparent: true,
-      opacity: 0.9,
-      blending: THREE.AdditiveBlending,
-      sizeAttenuation: true
-    });
-
-    const points = new THREE.Points(particleGeometry, particleMaterial);
-    scene.add(points);
-
-    // Grid
-    const grid = new THREE.GridHelper(40, 40, 0xdff122, 0x222222);
-    grid.rotation.x = Math.PI / 2;
-    const gridMaterials = Array.isArray(grid.material) ? grid.material : [grid.material];
-    gridMaterials.forEach((m) => {
-      m.transparent = true;
-      m.opacity = 0.05;
-    });
-    scene.add(grid);
-
-    // Mouse tracking
-    let targetX = 0;
-    let targetY = 0;
-    let currentX = 0;
-    let currentY = 0;
+    const resize = () => {
+      if (!canvas) return;
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+      
+      pts = Array.from({ length: 80 }, () => {
+        const vx = (Math.random() - 0.5) * 0.4;
+        const vy = (Math.random() - 0.5) * 0.4;
+        return {
+          x: Math.random() * W,
+          y: Math.random() * H,
+          vx: vx,
+          vy: vy,
+          originalVx: vx,
+          originalVy: vy,
+          length: Math.random() * 8 + 6, // dash length (6px to 14px)
+          width: Math.random() * 1.5 + 1.8, // dash width
+          color: colors[Math.floor(Math.random() * colors.length)],
+          angle: Math.random() * Math.PI * 2, // rotation angle
+          va: (Math.random() - 0.5) * 0.015, // angular velocity
+          friction: 0.94, // friction for mouse push deceleration
+        };
+      });
+    };
 
     const onMouseMove = (e: MouseEvent) => {
-      targetX = (e.clientX / window.innerWidth - 0.5) * 2;
-      targetY = -(e.clientY / window.innerHeight - 0.5) * 2;
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      mouse.active = true;
     };
 
-    // Scroll tracking
-    const onScroll = () => {
-      camera.position.y = window.scrollY * -0.002;
+    const onMouseLeave = () => {
+      mouse.active = false;
+      mouse.x = -1000;
+      mouse.y = -1000;
     };
 
-    // Resize
-    const onResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-
+    window.addEventListener("resize", resize);
     window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("scroll", onScroll);
-    window.addEventListener("resize", onResize);
+    window.addEventListener("mouseleave", onMouseLeave);
+    
+    resize();
 
-    // Animation loop
-    let animId: number;
-    const animate = () => {
-      animId = requestAnimationFrame(animate);
+    const draw = () => {
+      animId = requestAnimationFrame(draw);
+      ctx.clearRect(0, 0, W, H);
 
-      // Lerp mouse
-      const smoothing = 0.05;
-      currentX += (targetX - currentX) * smoothing;
-      currentY += (targetY - currentY) * smoothing;
+      pts.forEach((p) => {
+        // Physics update
+        if (mouse.active) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist < 180) {
+            // Calculate push force
+            const force = (180 - dist) / 180;
+            const dirX = dx / (dist || 1);
+            const dirY = dy / (dist || 1);
+            
+            // Push particle away (Antigravity repulsion force)
+            p.vx += dirX * force * 0.8;
+            p.vy += dirY * force * 0.8;
+          }
+        }
 
-      points.rotation.y = currentX * 0.3;
-      points.rotation.x = currentY * 0.3;
+        // Apply friction to slow down repulsion over time
+        p.vx *= p.friction;
+        p.vy *= p.friction;
 
-      renderer.render(scene, camera);
+        // Bring velocity back to original drift velocity gently
+        p.vx += (p.originalVx - p.vx) * 0.04;
+        p.vy += (p.originalVy - p.vy) * 0.04;
+
+        // Update positions
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Update rotation angle
+        p.angle += p.va;
+
+        // Screen boundary wraps
+        if (p.x < -20) p.x = W + 20;
+        if (p.x > W + 20) p.x = -20;
+        if (p.y < -20) p.y = H + 20;
+        if (p.y > H + 20) p.y = -20;
+
+        // Draw dash particle
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle);
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = p.width;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(-p.length / 2, 0);
+        ctx.lineTo(p.length / 2, 0);
+        ctx.stroke();
+        ctx.restore();
+      });
     };
-    animate();
+
+    draw();
 
     return () => {
       cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-      particleGeometry.dispose();
-      particleMaterial.dispose();
-      renderer.dispose();
-      if (mount.contains(renderer.domElement)) {
-        mount.removeChild(renderer.domElement);
-      }
+      window.removeEventListener("mouseleave", onMouseLeave);
     };
   }, []);
 
   return (
-    <div
-      ref={mountRef}
-      className="fixed inset-0 z-[-1]"
-      style={{
-        pointerEvents: "none",
-        width: "100vw",
-        height: "100vh",
-      }}
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 pointer-events-none z-0"
     />
   );
 }

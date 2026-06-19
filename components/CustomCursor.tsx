@@ -19,26 +19,29 @@ export default function CustomCursor() {
     let ringX = 0;
     let ringY = 0;
     let animId: number;
+    let dotX = 0;
+    let dotY = 0;
 
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-
-      if (dotRef.current) {
-        dotRef.current.style.left = `${mouseX}px`;
-        dotRef.current.style.top = `${mouseY}px`;
-      }
     };
 
     const animate = () => {
+      // Direct follow for dot, batched in animation frame
+      dotX = mouseX;
+      dotY = mouseY;
+
       // Spring interpolation for ring
       const spring = 0.12;
       ringX += (mouseX - ringX) * spring;
       ringY += (mouseY - ringY) * spring;
 
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%)`;
+      }
       if (ringRef.current) {
-        ringRef.current.style.left = `${ringX}px`;
-        ringRef.current.style.top = `${ringY}px`;
+        ringRef.current.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
       }
 
       animId = requestAnimationFrame(animate);
@@ -71,15 +74,15 @@ export default function CustomCursor() {
       {/* Main dot */}
       <div
         ref={dotRef}
-        className="fixed pointer-events-none z-[999999] -translate-x-1/2 -translate-y-1/2"
-        style={{ mixBlendMode: "difference" }}
+        className="fixed pointer-events-none z-[9000] will-change-transform"
       >
         <div
-          className="rounded-full bg-white transition-transform duration-150"
+          className={`rounded-full transition-all duration-300 ease-out ${
+            isHovering ? "bg-coral/30 scale-[3]" : "bg-coral scale-100"
+          }`}
           style={{
-            width: "6px",
-            height: "6px",
-            transform: isHovering ? "scale(2)" : "scale(1)",
+            width: "8px",
+            height: "8px",
           }}
         />
       </div>
@@ -87,15 +90,15 @@ export default function CustomCursor() {
       {/* Ring follower */}
       <div
         ref={ringRef}
-        className="fixed pointer-events-none z-[999998] -translate-x-1/2 -translate-y-1/2"
-        style={{ mixBlendMode: "difference" }}
+        className="fixed pointer-events-none z-[8999] will-change-transform"
       >
         <div
-          className="rounded-full border border-white transition-all duration-300"
+          className={`rounded-full border border-coral/50 transition-all duration-300 ease-out ${
+            isHovering ? "scale-[1.6] opacity-30" : "scale-100 opacity-100"
+          }`}
           style={{
-            width: isHovering ? "60px" : "40px",
-            height: isHovering ? "60px" : "40px",
-            opacity: isHovering ? 0.6 : 0.4,
+            width: "32px",
+            height: "32px",
           }}
         />
       </div>
