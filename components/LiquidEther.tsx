@@ -104,6 +104,7 @@ export default function LiquidEther({
       container: HTMLElement | null = null;
       renderer: THREE.WebGLRenderer | null = null;
       clock: THREE.Clock | null = null;
+      rendererSizeSet: boolean = false;
 
       init(container: HTMLElement) {
         this.container = container;
@@ -128,14 +129,17 @@ export default function LiquidEther({
 
         // Skip resizing if height changes due to mobile browser URL bar toggles
         const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        if (isMobile && newWidth === this.width) {
+        if (isMobile && this.rendererSizeSet && newWidth === this.width) {
           return;
         }
 
         this.width = newWidth;
         this.height = newHeight;
         this.aspect = this.width / this.height;
-        if (this.renderer) this.renderer.setSize(this.width, this.height, false);
+        if (this.renderer) {
+          this.renderer.setSize(this.width, this.height, false);
+          this.rendererSizeSet = true;
+        }
       }
       update() {
         if (this.clock) {
